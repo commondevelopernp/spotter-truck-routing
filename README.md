@@ -3,8 +3,9 @@
 A **React + Django** app that helps a truck driver pick the safest route between two places,
 based on the weather the truck will actually meet along the way, the load it carries, and travel time.
 
-- **Live demo:** _<hosted URL>_
-- **Walkthrough video:** _<Loom URL>_
+- **Repository:** https://github.com/commondevelopernp/spotter-truck-routing
+- **Live demo:** not deployed yet (see [Deploy](#deploy); one-click Render blueprint is included).
+- **Walkthrough video:** _<Loom URL, recorded by the applicant>_
 
 ![screenshot](docs/screenshot.png)
 
@@ -107,9 +108,15 @@ cd frontend && npm test       # vitest: heat scales, timeline, geometry
 
 ## Deploy
 
-The repo ships a multi-stage `Dockerfile` (it builds React, then serves everything from Django and gunicorn) and a Render blueprint (`render.yaml`):
-Render → New → Blueprint → pick this repo. Any Docker host works (Fly.io, Railway, Cloud Run).
-Environment: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=0`, optional `DJANGO_ALLOWED_HOSTS`, `OSRM_URL`, `OPEN_METEO_URL`, `PHOTON_URL`.
+The app is a single Docker image: the frontend is built in one stage, then Django + gunicorn serve the API and the SPA together. Routing (OSRM), weather (Open-Meteo) and geocoding (Photon) are public, keyless APIs, so no third-party keys are required.
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/commondevelopernp/spotter-truck-routing)
+
+1. Open the button above, or in [Render](https://render.com) go to **New → Blueprint** and select this repository.
+2. The blueprint (`render.yaml`) uses the free plan, sets `DJANGO_DEBUG=0`, generates `DJANGO_SECRET_KEY`, and health-checks `/api/health`.
+3. After the first deploy, set `DJANGO_ALLOWED_HOSTS` to the Render hostname if you want to tighten the default (`*`).
+
+Any Docker host also works (Fly.io, Railway, Cloud Run). Optional environment variables are listed in `.env.example`: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG`, `DJANGO_ALLOWED_HOSTS`, `OSRM_URL`, `OPEN_METEO_URL`, `PHOTON_URL`.
 
 ## Trade-offs and limitations
 
